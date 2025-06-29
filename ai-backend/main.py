@@ -20,7 +20,7 @@ app = FastAPI()
 # CORS settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://ai-blogsite.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
