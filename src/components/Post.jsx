@@ -43,7 +43,7 @@ export default function Post() {
   const generateSummary = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/summary", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: post.Content }),
@@ -59,7 +59,7 @@ export default function Post() {
   const generateQuestions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/questions", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: post.Content }),
@@ -75,7 +75,7 @@ export default function Post() {
   const translateContent = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/translate", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: post.Content, targetLang }),
@@ -91,7 +91,7 @@ export default function Post() {
   return post ? (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white px-4 py-10 font-sans">
       {/* Featured Image */}
-      <div className="relative max-w-5xl mx-auto  mb-12 group">
+      <div className="relative max-w-5xl mx-auto mb-12 group">
         <img
           src={appwriteService.getFilePreview(post.featuredImage)}
           alt={post.title}

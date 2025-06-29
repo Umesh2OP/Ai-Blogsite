@@ -91,14 +91,12 @@ const Postform1 = ({ post }) => {
     }
   };
 
-  // ------------------ AI Features ------------------
-
   const handleAIBlogDraft = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
     setAiLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/generate-blog", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-blog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, language: selectedLang }),
@@ -118,7 +116,7 @@ const Postform1 = ({ post }) => {
     if (!topic) return toast.error("Enter a title first");
     setAiLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/generate-outline", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-outline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, targetLang: selectedLang }),
@@ -138,7 +136,7 @@ const Postform1 = ({ post }) => {
     if (!topic) return toast.error("Enter a title first");
     setAiLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/suggest-titles", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/suggest-titles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, targetLang: selectedLang }),
@@ -160,7 +158,7 @@ const Postform1 = ({ post }) => {
     if (!content) return toast.error("Write content first");
     setAiLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/ai/retone-blog", {
+      const res = await fetch("https://ai-blogsite.onrender.com/ai/retone-blog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ blogContent: content, tone: selectedTone }),
@@ -184,7 +182,6 @@ const Postform1 = ({ post }) => {
     <div className="relative min-h-screen bg-black text-white py-20 px-4">
       <div className="max-w-6xl mx-auto border border-zinc-800 bg-zinc-900 rounded-2xl shadow-xl p-8 mt-16">
         <form onSubmit={handleSubmit(submit)} className="flex flex-col md:flex-row gap-8">
-          {/* Left Section */}
           <div className="w-full md:w-2/3 space-y-4">
             <Input
               label="Title :"
@@ -224,7 +221,6 @@ const Postform1 = ({ post }) => {
               defaultValue={getValues('Content')}
             />
 
-            {/* AI Buttons */}
             <div className="flex flex-wrap gap-3 mt-4">
               <button
                 type="button"
@@ -259,7 +255,6 @@ const Postform1 = ({ post }) => {
                 🗣️ Change Tone
               </button>
 
-              {/* Tone + Language Selection */}
               <select
                 className="bg-zinc-800 text-white px-3 py-1 rounded border border-zinc-700"
                 value={selectedTone}
@@ -285,7 +280,6 @@ const Postform1 = ({ post }) => {
             </div>
           </div>
 
-          {/* Right Section */}
           <div className="w-full md:w-1/3 space-y-4">
             <Input
               label="Featured Image :"
