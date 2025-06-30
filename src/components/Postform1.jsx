@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import Input from './Input';
 import Select from './Select';
 import Button from './Button';
+import { TailSpin } from 'react-loader-spinner';
 
 const Postform1 = ({ post }) => {
   const {
@@ -30,10 +31,16 @@ const Postform1 = ({ post }) => {
 
   const navigate = useNavigate();
   const userData = useSelector((state) => state.Auth?.userData);
-  const [aiLoading, setAiLoading] = useState(false);
+
   const [selectedTone, setSelectedTone] = useState("casual");
   const [selectedLang, setSelectedLang] = useState("English");
   const [titleSuggestions, setTitleSuggestions] = useState([]);
+
+  // New loading states
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [outlineLoading, setOutlineLoading] = useState(false);
+  const [titleLoading, setTitleLoading] = useState(false);
+  const [retoneLoading, setRetoneLoading] = useState(false);
 
   const Slugtransform = useCallback((value) => {
     if (value && typeof value === 'string') {
@@ -94,7 +101,7 @@ const Postform1 = ({ post }) => {
   const handleAIBlogDraft = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
-    setAiLoading(true);
+    setDraftLoading(true);
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-blog", {
         method: "POST",
@@ -107,14 +114,14 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Failed to generate blog");
     } finally {
-      setAiLoading(false);
+      setDraftLoading(false);
     }
   };
 
   const handleOutline = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
-    setAiLoading(true);
+    setOutlineLoading(true);
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-outline", {
         method: "POST",
@@ -127,14 +134,14 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Outline generation failed");
     } finally {
-      setAiLoading(false);
+      setOutlineLoading(false);
     }
   };
 
   const handleTitleSuggestions = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
-    setAiLoading(true);
+    setTitleLoading(true);
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/suggest-titles", {
         method: "POST",
@@ -149,14 +156,14 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Title suggestions failed");
     } finally {
-      setAiLoading(false);
+      setTitleLoading(false);
     }
   };
 
   const handleRetone = async () => {
     const content = getValues("Content");
     if (!content) return toast.error("Write content first");
-    setAiLoading(true);
+    setRetoneLoading(true);
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/retone-blog", {
         method: "POST",
@@ -169,7 +176,7 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Tone adjustment failed");
     } finally {
-      setAiLoading(false);
+      setRetoneLoading(false);
     }
   };
 
@@ -225,34 +232,37 @@ const Postform1 = ({ post }) => {
               <button
                 type="button"
                 onClick={handleAIBlogDraft}
-                disabled={aiLoading}
-                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                disabled={draftLoading}
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2"
               >
-                ✍️ AI Draft
+                {draftLoading ? <TailSpin height={18} width={18} color="#fff" /> : '✍️ AI Draft'}
               </button>
+
               <button
                 type="button"
                 onClick={handleOutline}
-                disabled={aiLoading}
-                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
+                disabled={outlineLoading}
+                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2"
               >
-                📑 AI Outline
+                {outlineLoading ? <TailSpin height={18} width={18} color="#fff" /> : '📑 AI Outline'}
               </button>
+
               <button
                 type="button"
                 onClick={handleTitleSuggestions}
-                disabled={aiLoading}
-                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
+                disabled={titleLoading}
+                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 flex items-center gap-2"
               >
-                🎯 Title Suggestions
+                {titleLoading ? <TailSpin height={18} width={18} color="#fff" /> : '🎯 Title Suggestions'}
               </button>
+
               <button
                 type="button"
                 onClick={handleRetone}
-                disabled={aiLoading}
-                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                disabled={retoneLoading}
+                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2"
               >
-                🗣️ Change Tone
+                {retoneLoading ? <TailSpin height={18} width={18} color="#fff" /> : '🗣️ Change Tone'}
               </button>
 
               <select
