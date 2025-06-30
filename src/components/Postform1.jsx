@@ -101,6 +101,8 @@ const Postform1 = ({ post }) => {
   const handleAIBlogDraft = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
+      console.log("draftLoading before:", draftLoading);
+
     setDraftLoading(true);
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-blog", {
