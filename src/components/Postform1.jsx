@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import Input from './Input';
 import Select from './Select';
 import Button from './Button';
-import { TailSpin } from 'react-loader-spinner';
+import Loader from '../components/Loader'; 
 
 const Postform1 = ({ post }) => {
   const {
@@ -31,16 +31,11 @@ const Postform1 = ({ post }) => {
 
   const navigate = useNavigate();
   const userData = useSelector((state) => state.Auth?.userData);
-
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiLoadingMessage, setAiLoadingMessage] = useState('');
   const [selectedTone, setSelectedTone] = useState("casual");
   const [selectedLang, setSelectedLang] = useState("English");
   const [titleSuggestions, setTitleSuggestions] = useState([]);
-
-  // New loading states
-  const [draftLoading, setDraftLoading] = useState(false);
-  const [outlineLoading, setOutlineLoading] = useState(false);
-  const [titleLoading, setTitleLoading] = useState(false);
-  const [retoneLoading, setRetoneLoading] = useState(false);
 
   const Slugtransform = useCallback((value) => {
     if (value && typeof value === 'string') {
@@ -101,9 +96,8 @@ const Postform1 = ({ post }) => {
   const handleAIBlogDraft = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
-      console.log("draftLoading before:", draftLoading);
-
-    setDraftLoading(true);
+    setAiLoading(true);
+    setAiLoadingMessage("✍️ Generating blog with AI...");
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-blog", {
         method: "POST",
@@ -116,14 +110,16 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Failed to generate blog");
     } finally {
-      setDraftLoading(false);
+      setAiLoading(false);
+      setAiLoadingMessage('');
     }
   };
 
   const handleOutline = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
-    setOutlineLoading(true);
+    setAiLoading(true);
+    setAiLoadingMessage("📑 Creating outline using AI...");
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/generate-outline", {
         method: "POST",
@@ -136,14 +132,16 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Outline generation failed");
     } finally {
-      setOutlineLoading(false);
+      setAiLoading(false);
+      setAiLoadingMessage('');
     }
   };
 
   const handleTitleSuggestions = async () => {
     const topic = getValues("title");
     if (!topic) return toast.error("Enter a title first");
-    setTitleLoading(true);
+    setAiLoading(true);
+    setAiLoadingMessage("🎯 Fetching AI-generated title suggestions...");
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/suggest-titles", {
         method: "POST",
@@ -158,14 +156,16 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Title suggestions failed");
     } finally {
-      setTitleLoading(false);
+      setAiLoading(false);
+      setAiLoadingMessage('');
     }
   };
 
   const handleRetone = async () => {
     const content = getValues("Content");
     if (!content) return toast.error("Write content first");
-    setRetoneLoading(true);
+    setAiLoading(true);
+    setAiLoadingMessage("🗣️ Changing tone with AI...");
     try {
       const res = await fetch("https://ai-blogsite.onrender.com/ai/retone-blog", {
         method: "POST",
@@ -178,7 +178,8 @@ const Postform1 = ({ post }) => {
     } catch (err) {
       toast.error("Tone adjustment failed");
     } finally {
-      setRetoneLoading(false);
+      setAiLoading(false);
+      setAiLoadingMessage('');
     }
   };
 
@@ -234,37 +235,34 @@ const Postform1 = ({ post }) => {
               <button
                 type="button"
                 onClick={handleAIBlogDraft}
-                disabled={draftLoading}
-                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-2"
+                disabled={aiLoading}
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
               >
-                {draftLoading ? <TailSpin height={18} width={18} color="#fff" /> : '✍️ AI Draft'}
+                ✍️ AI Draft
               </button>
-
               <button
                 type="button"
                 onClick={handleOutline}
-                disabled={outlineLoading}
-                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 flex items-center gap-2"
+                disabled={aiLoading}
+                className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700"
               >
-                {outlineLoading ? <TailSpin height={18} width={18} color="#fff" /> : '📑 AI Outline'}
+                📑 AI Outline
               </button>
-
               <button
                 type="button"
                 onClick={handleTitleSuggestions}
-                disabled={titleLoading}
-                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 flex items-center gap-2"
+                disabled={aiLoading}
+                className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
               >
-                {titleLoading ? <TailSpin height={18} width={18} color="#fff" /> : '🎯 Title Suggestions'}
+                🎯 Title Suggestions
               </button>
-
               <button
                 type="button"
                 onClick={handleRetone}
-                disabled={retoneLoading}
-                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2"
+                disabled={aiLoading}
+                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
               >
-                {retoneLoading ? <TailSpin height={18} width={18} color="#fff" /> : '🗣️ Change Tone'}
+                🗣️ Change Tone
               </button>
 
               <select
@@ -290,6 +288,12 @@ const Postform1 = ({ post }) => {
                 <option>French</option>
               </select>
             </div>
+
+            {aiLoading && (
+              <div className="mt-4">
+                <Loader message={aiLoadingMessage} />
+              </div>
+            )}
           </div>
 
           <div className="w-full md:w-1/3 space-y-4">
