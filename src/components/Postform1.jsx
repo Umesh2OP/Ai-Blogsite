@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import Input from './Input';
 import Select from './Select';
 import Button from './Button';
-import Loader from '../components/Loader'; 
+import Loader from '../components/Loader';
 
 const Postform1 = ({ post }) => {
   const {
@@ -58,38 +58,49 @@ const Postform1 = ({ post }) => {
   }, [watch, Slugtransform, setValue]);
 
   const submit = async (data) => {
-    if (post) {
-      const file = data.image?.[0]
-        ? await appwriteService.uploadFile(data.image[0])
-        : null;
+    setAiLoading(true);
+    setAiLoadingMessage(post ? "🔄 Updating post..." : "📝 Submitting post...");
 
-      if (file) {
-        await appwriteService.deleteFile(post.featuredImage);
-      }
+    try {
+      if (post) {
+        const file = data.image?.[0]
+          ? await appwriteService.uploadFile(data.image[0])
+          : null;
 
-      const dbPost = await appwriteService.updatePost(post.$id, {
-        ...data,
-        featuredImage: file ? file.$id : post.featuredImage,
-      });
+        if (file) {
+          await appwriteService.deleteFile(post.featuredImage);
+        }
 
-      if (dbPost) {
-        navigate(`/post/${dbPost.$id}`);
-      }
-    } else {
-      const file = await appwriteService.uploadFile(data.image[0]);
-      if (file) {
-        data.featuredImage = file.$id;
-        const dbPost = await appwriteService.createPost({
+        const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
-          Userid: userData?.$id,
+          featuredImage: file ? file.$id : post.featuredImage,
         });
+
         if (dbPost) {
-          toast.success('Post created');
+          toast.success("Post updated");
           navigate(`/post/${dbPost.$id}`);
-        } else {
-          toast.error('Post creation failed.');
+        }
+      } else {
+        const file = await appwriteService.uploadFile(data.image[0]);
+        if (file) {
+          data.featuredImage = file.$id;
+          const dbPost = await appwriteService.createPost({
+            ...data,
+            Userid: userData?.$id,
+          });
+          if (dbPost) {
+            toast.success('Post created');
+            navigate(`/post/${dbPost.$id}`);
+          } else {
+            toast.error('Post creation failed.');
+          }
         }
       }
+    } catch (err) {
+      toast.error('Something went wrong');
+    } finally {
+      setAiLoading(false);
+      setAiLoadingMessage('');
     }
   };
 
@@ -321,7 +332,7 @@ const Postform1 = ({ post }) => {
             />
             <Button
               type="submit"
-              disabled={!isValid}
+              disabled={!isValid || aiLoading}
               className={`
                 w-full px-6 py-3 text-white font-semibold rounded-xl transition duration-300 ease-in-out
                 ${post ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}
@@ -329,7 +340,12 @@ const Postform1 = ({ post }) => {
                 shadow-md hover:shadow-lg
               `}
             >
-              {post ? 'Update' : 'Submit'}
+              {aiLoading && aiLoadingMessage.includes("post") ? (
+                <div className="flex gap-2 items-center justify-center">
+                  <div className="animate-spin h-5 w-5 rounded-full border-2 border-t-transparent border-white"></div>
+                  <span>{aiLoadingMessage}</span>
+                </div>
+              ) : post ? 'Update' : 'Submit'}
             </Button>
           </div>
         </form>
